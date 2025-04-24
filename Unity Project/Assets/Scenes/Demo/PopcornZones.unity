@@ -743,10 +743,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   forceScalar: 750
+  radius: 4
   readFromAudio: 0
   sampleRange: 0
   weightPerSample: 0.2
-  radius: 4
   threshold: 0.5
   zones:
   - {fileID: 9166864611978861284}
@@ -759,10 +759,10 @@ AudioSource:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1566932124}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: c3860bf935ef34c989ed47e438697847, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1

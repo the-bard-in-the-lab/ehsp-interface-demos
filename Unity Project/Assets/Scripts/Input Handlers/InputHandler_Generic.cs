@@ -16,17 +16,17 @@ public class InputHandler_Generic : MonoBehaviour
         //osc.inPort = GlobalData.port;
         osc.SetAddressHandler(GlobalData.OSCAddress, OSCHandler);
     }
-    void OSCHandler(OscMessage message) {
+    void OSCHandler(OscMessage message, long time) {
         string[] msg = message.ToString().Split(" ");
 		// Sensory Percussion 2 OSC messages take the form /obsidian/hwout/midi1 <command> <velocity> <note> <transpose> <channel>
         // Typically, we care about the command (play vs. stop), the velocity (0.0 to 1.0), and the note (as a MIDI number)
         string command = msg[1];
         float velocity = float.Parse(msg[2]);
         int note = int.Parse(msg[3]);
-        InputHandler(command, velocity, note);
+        InputHandler(command, velocity, note, time);
     }
 
-    protected virtual void InputHandler(string command, float velocity, int note) {
+    protected virtual void InputHandler(string command, float velocity, int note, long time) {
         Debug.Log("If you see this, you have a child class that needs to override this method.");
         Debug.Log($"Message: {command} {velocity} {note}");
     }

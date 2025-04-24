@@ -30,6 +30,7 @@ public class TableOfTime : InputHandler_Generic
     public double latency = 0.01d;
     public TMP_Dropdown dropdown;
     public GameObject tendencyOrb;
+    List<double> closenesses;
     // Use AudioSettings.dspTime instead of Time.time
     // Start is called before the first frame update
     
@@ -40,6 +41,7 @@ public class TableOfTime : InputHandler_Generic
         tempo = (int) tempo_slider.value;
         ioi = 60d / tempo; // Converts from BPM to interonset interval (in seconds)
         Debug.Log("ioi: " + ioi);
+        closenesses = new List<double>();
     }
 
     public void UpdateSubdivision() {
@@ -49,6 +51,12 @@ public class TableOfTime : InputHandler_Generic
     // Update is called once per frame
     void FixedUpdate()
     {
+        foreach (var closeness in closenesses) {
+            tendencyOrb.GetComponent<TendencyController>().newHit(-closeness);
+        }
+        closenesses.Clear();        
+        
+        
         tempo = (int) tempo_slider.value;
         ioi = 60d / tempo; // Converts from BPM to interonset interval (ms)
 
@@ -124,10 +132,10 @@ public class TableOfTime : InputHandler_Generic
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space)) {
-            InputHandler("play", 0.5f, 60);
+            InputHandler("play", 0.5f, 60, DateTime.Now.Ticks);
         }
     }
-    protected override void InputHandler(string command, float velocity, int note) {
+    protected override void InputHandler(string command, float velocity, int note, long time) {
         double myTime = AudioSettings.dspTime;
         double diff = referenceTime - (myTime - latency); // This order because referenceTime is always in the future
         double howClose = diff / (ioi / subdivision) % 1; // %1 is cursed as hell but it does work sooooooo
@@ -141,6 +149,6 @@ public class TableOfTime : InputHandler_Generic
         if (howClose > 0.5) {
             howClose = howClose - 1;
         }
-        tendencyOrb.GetComponent<TendencyController>().newHit(-howClose);
+        closenesses.Add(-howClose);
     }
 }

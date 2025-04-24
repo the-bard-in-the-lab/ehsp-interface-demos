@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,15 +14,16 @@ public class GraphHandler : InputHandler_Generic
     void Update() {
         // Mimic drum input using the space bar
         if (Input.GetKeyDown(KeyCode.Space)) {
-            InputHandler("play", 0.5f, 60);
+            InputHandler("play", 0.5f, 60, DateTime.Now.Ticks);
         }
     }
 
-    protected override void InputHandler(string command, float velocity, int note) {
-        Debug.Log("This is the graph handler version of the method.");
-        Debug.Log($"Message: {command} {velocity} {note}");
+    protected override void InputHandler(string command, float velocity, int note, long time) {
+        //Debug.Log("This is the graph handler version of the method.");
+        //Debug.Log($"Message: {command} {velocity} {note}");
         if (command.Equals("play")) {
-            myGrapher.AddNewImpulse();
+            myGrapher.AddNewImpulse(time);
+            myGrapher.AddNewVelocity(velocity);
         }
     }
 }

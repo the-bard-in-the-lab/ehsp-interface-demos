@@ -375,7 +375,7 @@ public class UDPPacketIO
 	
   }
 
-  public delegate void OscMessageHandler( OscMessage oscM );
+  public delegate void OscMessageHandler( OscMessage oscM, long time);
 
   /// <summary>
   /// The Osc class provides the methods required to send, receive, and manipulate OSC messages.
@@ -402,8 +402,9 @@ public class UDPPacketIO
     public string outIP = "127.0.0.1";
     public int outPort  = 6161;
 
-      private UDPPacketIO OscPacketIO;
-      Thread ReadThread;
+    private UDPPacketIO OscPacketIO;
+    Thread ReadThread;
+    Thread BetterThanUpdate;
 	  private bool ReaderRunning;
       private OscMessageHandler AllMessageHandler;
 
@@ -416,6 +417,7 @@ public class UDPPacketIO
 	byte[] buffer;
 
 	bool paused = false;
+  private int tot = 0;
 
 
 #if UNITY_EDITOR
@@ -450,6 +452,11 @@ public class UDPPacketIO
 		ReaderRunning = true;
 		ReadThread.IsBackground = true;      
 		ReadThread.Start();
+
+    BetterThanUpdate = new Thread(ThisRunsReallyFast);
+		BetterThanUpdate.IsBackground = true;      
+		BetterThanUpdate.Start();
+
 
 #if UNITY_EDITOR
         //UnityEditor.EditorApplication.playmodeStateChanged = HandleOnPlayModeChanged;
@@ -497,33 +504,28 @@ public class UDPPacketIO
 	}
 
 
-	void Update() {
+	void ThisRunsReallyFast() {
+		while (true) {
+      //Debug.Log("NYOOM");
+      if ( messagesReceived.Count > 0 ) {
+        //Debug.Log("received " + messagesReceived.Count + " messages");
+        lock(ReadThreadLock) {
+          foreach (OscMessage om in messagesReceived)
+          {
+            if (AllMessageHandler != null)
+              AllMessageHandler(om, DateTime.Now.Ticks);
 
-
-		if ( messagesReceived.Count > 0 ) {
-			//Debug.Log("received " + messagesReceived.Count + " messages");
-			lock(ReadThreadLock) {
-				foreach (OscMessage om in messagesReceived)
-				{
-
-					if (AllMessageHandler != null)
-						AllMessageHandler(om);
-
-					ArrayList al = (ArrayList)Hashtable.Synchronized(AddressTable)[om.address];
-					if ( al != null) {
-						foreach (OscMessageHandler h in al) {
-							h(om);
-						}
-					}
-
-				}
-				messagesReceived.Clear();
-			}
-		}
-
-
-
-
+            ArrayList al = (ArrayList)Hashtable.Synchronized(AddressTable)[om.address];
+            if ( al != null) {
+              foreach (OscMessageHandler h in al) {
+                h(om, DateTime.Now.Ticks);
+              }
+            }
+          }
+          messagesReceived.Clear();
+        }
+      }
+    }
 	}
 
 
@@ -550,6 +552,7 @@ public class UDPPacketIO
             ReadThread.Abort();
 
         }
+        BetterThanUpdate.Abort();
         
         if (OscPacketIO != null && OscPacketIO.IsOpen())
         {
@@ -570,27 +573,49 @@ public class UDPPacketIO
 	{
 		try
 		{
-			while (ReaderRunning)
+			while (ReaderRunning) //while (ReaderRunning)
 			{
-
-
+        //tot ++;
+        //Debug.Log("Something something thread something something");
 				int length = OscPacketIO.ReceivePacket(buffer);
-
-				if (length > 0)
-				{
+      
+				if (length > 0) {
 					lock(ReadThreadLock) {
-
 						if ( paused == false ) {
 							ArrayList newMessages = OSC.PacketToOscMessages(buffer, length);
 							messagesReceived.AddRange(newMessages);
 						}
-
 					}
-
-
 				}
-				else
-					Thread.Sleep(5);
+        else {
+					Thread.Sleep(1);
+        }
+        
+        // This is interpolated from the old Update function:
+        // if ( messagesReceived.Count > 0 ) {
+        //   //Debug.Log("received " + messagesReceived.Count + " messages");
+        //   Debug.Log($"total since last OSC message: {tot}");
+        //   tot = 0;
+        //   lock(ReadThreadLock) {
+        //     lastTime = AudioSettings.dspTime;
+        //     foreach (OscMessage om in messagesReceived)
+        //     {
+
+        //       if (AllMessageHandler != null) {
+        //         AllMessageHandler(om, lastTime);
+        //       }
+
+        //       ArrayList al = (ArrayList)Hashtable.Synchronized(AddressTable)[om.address];
+        //       if (al != null) {
+        //         foreach (OscMessageHandler h in al) {
+        //           h(om, lastTime);
+        //         }
+        //       }
+
+        //     }
+        //     messagesReceived.Clear();
+        //   }
+        // }
 			}
 		}
 		

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <session version="0.1.9" uuid="2e302d919b834cf18f11835c693084d0" currentSet="92e1fcf38e1d43898813238f00cc1e9d"
-         displayedSet="92e1fcf38e1d43898813238f00cc1e9d" displayRear="edit"
-         unfolded="footerOpened" name="ThreeZones" hwOutputsPanelWidth="419">
+         displayedSet="92e1fcf38e1d43898813238f00cc1e9d" unfolded="footerOpened"
+         displayRear="edit" name="ThreeZones" hwOutputsPanelWidth="419">
   <globalSet colour="ff4eadea" mainColour="ff4e4f7a" secondaryColour="ff666af2"
              fillAll="1" armrecord="1" uuid="04d13434dd20489dbdb9e9b16368c2f0">
     <mixBus outputs="analog1" uuid="f798243d66e942da976c717a24aa0423"/>
@@ -27,15 +27,15 @@
               colour="fff5d852" longDescription="" unfolded="">
     <drumPads name="snare pads" surfaceType="snare" msgInputs="snare1" activePads="center,edge,stickshot,damped,rim-shoulder,rim-tip,shell"
               uuid="4ca88aed55d54fac9588b4d1be58912f" pinned="drumPads,mixPanel,childsPanel"
-              unfolded="drumPads,childsPanel" selectedColumn="9" displayedIndices="3"
-              matrix="1,1,0,1,1,0,0,0,1,0/0,0,1,0,0,1,1,0,0,0/0,0,0,0,0,0,0,1,0,0/0,0,0,0,0,0,0,0,0,1/1,1,0,1,1,0,0,0,1,0"
-              displayFx="1" followTriggered="0">
+              unfolded="drumPads,childsPanel" selectedColumn="9" displayedIndices="0"
+              matrix="1,1,0,1,1,0,0,0,1,0/0,0,1,0,0,1,1,0,0,0/0,0,0,0,0,0,0,1,0,0/0,0,0,0,0,0,0,0,0,1/1,1,0,1,1,0,0,0,1,0/1,1,0,1,1,0,0,0,1,0"
+              displayFx="0" followTriggered="0">
       <noteController uuid="4fe895501bf0444e9f25be74fb55855b" pinned="noteController,mixPanel,childsPanel"
                       unfolded="noteController,childsPanel" selectedPads="center,edge,cross-stick,rimshot-center,rimshot-edge,rim-tip,rim-shoulder,stickshot,damped,shell"
                       pitchs="60,62,64" weights="l:0.333333,0.333333,0.333333" mode="timbre"
                       padA="center" padB="edge" displayFx="0" displayedIndices="0"
-                      noteSet="Custom" inputMin="0.2192223221063614" edgeModeMin="1"
-                      inputMax="0.7348856209150327" muted="0">
+                      noteSet="Custom" edgeModeMin="1" inputMax="0.9209941625595093"
+                      muted="0" selected="1" inputMin="0.2541998570261438">
         <midiController uuid="380486dc8e99435e9b37ee9110865d52" pinned="midiController"
                         unfolded="midiController" midiChannel="1" noteLength="100.0"
                         muted="0" outputs="midi1" selected="1"/>
@@ -61,14 +61,30 @@
         <midiController uuid="90d4d0c9a32540ca8522aa7aca5ae6b0" pinned="midiController"
                         unfolded="midiController" noteLength="10.0" midiChannel="1"/>
       </noteController>
-      <midiCCsGenerator uuid="b6f4820124974edb9e02d78d47477735" pinned="midiCCsGenerator"
+      <midiCCsGenerator uuid="50fac66179504086ba2ed67983fbfbf5" pinned="midiCCsGenerator"
                         unfolded="midiCCsGenerator" muted="0" midiChannel="1" msgInputs="">
-        <ccEvent midiCCNum="1" uuid="098fdbd569b5407bad68e9acc7550fd5" displayedAssignment="99ebe19a47104d5fabfe623c1c7b6a60">
+        <ccEvent midiCCNum="1" uuid="72efc45e1b624a728dc172d98e94d648" displayedAssignment="14b5a1d1cae443e8b378983abad03db9">
           <assignment name="# value" paramId="midiCC" outputMin="0" outputMax="127.0"
-                      uuid="99ebe19a47104d5fabfe623c1c7b6a60" inputs="here" mode="timbre"
+                      uuid="14b5a1d1cae443e8b378983abad03db9" inputs="here" mode="timbre"
                       selected="1">
+            <timbre name="# timbre" uuid="07d311e41d98408a81183cf5e9f28dec" surfaceType="snare"
+                    padA="center" padB="edge"/>
+          </assignment>
+        </ccEvent>
+      </midiCCsGenerator>
+      <midiCCsGenerator uuid="b6f4820124974edb9e02d78d47477735" pinned="midiCCsGenerator"
+                        unfolded="midiCCsGenerator" muted="0" midiChannel="1" msgInputs=""
+                        selected="1">
+        <ccEvent midiCCNum="1" uuid="098fdbd569b5407bad68e9acc7550fd5" displayedAssignment="ebb527825d2f4783bb41843c62c80db3">
+          <assignment name="# value" paramId="midiCC" outputMin="0" outputMax="127.0"
+                      uuid="99ebe19a47104d5fabfe623c1c7b6a60" inputs="here" mode="timbre">
             <timbre name="# timbre" uuid="3e32ea67fb4a4bf7845d501a5142a0c9" surfaceType="snare"
                     padA="center" padB="edge"/>
+          </assignment>
+          <assignment name="# value" paramId="midiCC" outputMin="0" outputMax="127"
+                      uuid="ebb527825d2f4783bb41843c62c80db3" inputs="here" mode="velocity">
+            <velocity name="# velocity" uuid="314a5563805f426d9bafc41e8d6d13c9" surfaceType="snare"
+                      selectedPads="center,edge,cross-stick,rimshot-center,rimshot-edge,rim-tip,rim-shoulder,stickshot,damped,shell"/>
           </assignment>
         </ccEvent>
       </midiCCsGenerator>

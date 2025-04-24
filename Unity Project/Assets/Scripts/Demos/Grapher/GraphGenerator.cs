@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,8 +11,11 @@ public class GraphGenerator : MonoBehaviour
     public double xMax = 100f;
     public double yMin = 0f;
     public double yMax = 50f;    
+    public Gradient myGradient;
     private RectTransform myRectTransform;
-    private LineRendererUI myRenderer;
+    [SerializeField] private GameObject myRenderer;
+    private List<GameObject> renderSquad;
+    int numRenderers = 100;
     public float lineWidth = 2f;
     public Slider widthController;
     public List<Vector2> myCoords = new List<Vector2>{
@@ -25,15 +29,25 @@ public class GraphGenerator : MonoBehaviour
     void Start()
     {
         myRectTransform = GetComponent<RectTransform>();
-        myRenderer = GetComponent<LineRendererUI>();
+        //myRenderer = GetComponentInChildren<LineRendererUI>().gameObject;
+        renderSquad = new List<GameObject>();
         widthController.value = lineWidth;
+        myRenderer.GetComponent<LineRendererUI>().lineWidth = lineWidth;
+        for (int i = 0; i < numRenderers; i ++) {
+            renderSquad.Add(Instantiate(myRenderer, gameObject.transform));
+            //Debug.Log(renderSquad[i]);
+            renderSquad[i].SetActive(true);
+        }
     }
     public void UpdateWidth() {
         lineWidth = widthController.value;
-        myRenderer.SetLineWidth(lineWidth);
+        foreach (var lr in renderSquad) {
+            lr.GetComponent<LineRendererUI>().SetLineWidth(lineWidth);
+        }
+        //myRenderer.GetComponent<LineRendererUI>().SetLineWidth(lineWidth);
     }
 
-    public void DrawGraph(List<Vector2> points) {
+    public void DrawGraph(List<Vector2> points, List<float> segColors) {
         myCoords = points;
         
         double xScalar = myRectTransform.rect.width / (xMax - xMin);
@@ -49,10 +63,33 @@ public class GraphGenerator : MonoBehaviour
                                             (float) ((points[i].y - yShift) * yScalar)));
         }
         
-        //pointsConverted.Insert(0, new Vector2(pointsConverted[0].x, 0));
-        myRenderer.SetVertices(pointsConverted);
+        //myRenderer.GetComponent<LineRendererUI>().SetVertices(pointsConverted);
+        
+        
+        // Multi-renderer version:
+        if (pointsConverted.Count > 1) {
+            int start = 1;
+            int end = pointsConverted.Count - 1;
+            if (pointsConverted.Count > numRenderers) {
+                start = pointsConverted.Count - numRenderers;
+                end = numRenderers;
+            }
+            
+            for (int i = 0; i < end; i ++) {
+                // Debug.Log($"renderSquad.Count: {renderSquad.Count}");
+                // Debug.Log($"pointsConverted.Count: {pointsConverted.Count}");
+                // Debug.Log($"start + i - 1: {start + i - 1}");
+                // Debug.Log($"end: {end}");
+                
+                LineRendererUI thisRenderer = renderSquad[i].GetComponent<LineRendererUI>();
+                thisRenderer.SetVertices(new List<Vector2> {pointsConverted[start + i - 1], pointsConverted[start + i]});
+                thisRenderer.color = myGradient.Evaluate(segColors[start + i + 1]);
+            }
+        }
+        
         
         // Culls points on 2D graphs that pass the vertical line test:
+        // With the multi-renderer version, this is unnecessary
 
         // int startInd = points.Count - 1;
         // int endInd = 0;

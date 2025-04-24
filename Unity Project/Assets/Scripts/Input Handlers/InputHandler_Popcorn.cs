@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,6 +14,9 @@ public class PopcornHandler : InputHandler_Generic
     [SerializeField] Rigidbody[] zones; // The zone objects in the scene. Treated as an array in case we ever want more than two.
     [SerializeField] GameObject prefab; // The popcorn prefab
     float sampleProduct;
+    List<string> commands;
+    List<float> velocities;
+    List<int> notes;
     /*
     sampleProduct is a rough estimate of the sum of the magnitude of the
     samples in a short snippet of audio. We compare the actual sum to this
@@ -28,6 +32,9 @@ public class PopcornHandler : InputHandler_Generic
         mySource = GetComponent<AudioSource>();
         myClip = mySource.clip;
         sampleProduct = sampleRange * weightPerSample;
+        commands = new List<string>();
+        velocities = new List<float>();
+        notes = new List<int>();
     } 
 
     void Update() {
@@ -36,9 +43,27 @@ public class PopcornHandler : InputHandler_Generic
         }
         else {
             if (Input.GetKeyDown(KeyCode.Space)) {
-                InputHandler("play", 0.5f, 60);
+                InputHandler("play", 0.5f, 60, DateTime.Now.Ticks);
             }
         }
+
+        for (int i = 0; i < velocities.Count; i ++ ) {
+            // If we are in the center of the drum, activate the center zone
+            // Otherwise, use the edge
+            int zone = (notes[i] == 60 ? 0 : 1);
+            zones[zone].AddForce(forceScalar * velocities[i] * Vector3.up);
+            
+            // Spawn a new piece of popcorn
+            Transform spawnerTransform = GameObject.Find("Spawner").transform;
+            GameObject newPrefab = Instantiate(prefab, spawnerTransform);
+            Vector2 unitpos = UnityEngine.Random.insideUnitCircle;
+            newPrefab.transform.position = spawnerTransform.position + new Vector3(unitpos.x * radius, 0, unitpos.y * radius);
+            newPrefab.transform.rotation = UnityEngine.Random.rotationUniform;
+            newPrefab.SetActive(true);   
+        }
+        
+        velocities.Clear();
+        notes.Clear();
     }
 
     void InterpretAudio() {
@@ -64,19 +89,15 @@ public class PopcornHandler : InputHandler_Generic
         }
     }
 
-    protected override void InputHandler(string command, float velocity, int note) {
-        Debug.Log("This is the popcorn handler version of the method.");
-        Debug.Log($"Message: {command} {velocity} {note}");
-        
-        
-        int zone = note == 60 ? 0 : 1; // If we are in the center of the drum, activate the center zone
-        zones[zone].AddForce(forceScalar * velocity * Vector3.up);
-        Transform spawnerTransform = GameObject.Find("Spawner").transform;
-        GameObject newPrefab = Instantiate(prefab, spawnerTransform);
-        Vector2 unitpos = Random.insideUnitCircle;
-        newPrefab.transform.position = spawnerTransform.position + new Vector3(unitpos.x * radius, 0, unitpos.y * radius);
-        newPrefab.transform.rotation = Random.rotationUniform;
-        newPrefab.SetActive(true);
+    protected override void InputHandler(string command, float velocity, int note, long time) {
+        lock(commands) {
+            Debug.Log("This is the popcorn handler version of the method.");
+            Debug.Log($"Message: {command} {velocity} {note}");
+            if (command.Equals("play")) {
+                velocities.Add(velocity);
+                notes.Add(note);
+            }
+        }
     }
 }
 

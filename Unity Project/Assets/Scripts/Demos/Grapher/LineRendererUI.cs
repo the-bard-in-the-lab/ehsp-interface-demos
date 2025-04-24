@@ -26,6 +26,7 @@ public class LineRendererUI : MaskableGraphic // (We need to be maskable to supp
             if (vertices.Count > 1) {
                 for (int i = 1; i < vertices.Count; i ++) {
                     UIVertex vertex = UIVertex.simpleVert;
+                    vertex.color = color;
                     Vector2 myDir = (vertices[i] - vertices[i - 1]).normalized;
                     Vector2 perpendicular = new Vector2(-myDir.y, myDir.x); // Rotates 90 degrees counterclockwise
                     

@@ -6,15 +6,21 @@ using UnityEngine.SceneManagement;
 public class WaybackMachine : InputHandler_Generic
 {
     [SerializeField] private string sceneTarget;
+    bool goToScene = false;
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape)) {
             GoToScene();
         }
-    }
-    protected override void InputHandler(string command, float velocity, int note) {
-        if (command.Equals("play") && note == 71) {
+        if (goToScene) {
+            goToScene = false; // Reset the flag
             GoToScene();
+        }
+        
+    }
+    protected override void InputHandler(string command, float velocity, int note, long time) {
+        if (command.Equals("play") && note == 71) {
+            goToScene = true;
         }
     }
 

@@ -13,6 +13,8 @@ public class MenuManager : InputHandler_Generic
     [SerializeField] private GameObject main_firstSelectedButton;
     [SerializeField] private GameObject settings_firstSelectedButton;
     [SerializeField] private GameObject settingsButton;
+    private bool cueSelect = false;
+    private bool cueAdvance = false;
 
     void Start()
     {
@@ -42,28 +44,39 @@ public class MenuManager : InputHandler_Generic
                 break;
         }
     }
+    void Update() {
+        Button button = EventSystem.current.currentSelectedGameObject.GetComponent<Button>();
+        TMP_InputField field = EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>();
+        //Debug.Log(button);
+        if (cueAdvance) {
+            // The user wants to advance to the next item with the drum
+            GameObject nextSelected = EventSystem.current.currentSelectedGameObject.GetComponent<Selectable>().FindSelectableOnRight().gameObject;
+            //Debug.Log($"nextSelected: {nextSelected}");
+            EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current.SetSelectedGameObject(nextSelected);
+            cueAdvance = false; // Reset the flag
+            
+        }
+        if (cueSelect) {
+            // The user wants to input a button press with the drum
+            if (button != null) {
+                button.onClick.Invoke();
+            }
+            if (field != null) {
+                field.onSubmit.Invoke(field.text);
+            }
+            cueSelect = false; // Reset the flag
+        }
+    }
 
-    protected override void InputHandler(string command, float velocity, int note) {
-        if (command.Equals("play")) {
-            Button button = EventSystem.current.currentSelectedGameObject.GetComponent<Button>();
-            TMP_InputField field = EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>();
+    protected override void InputHandler(string command, float velocity, int note, long time) {
+        if (command.Equals("play")) {            
             //Debug.Log(velocity);
-            //Debug.Log(button);
             if (velocity > 0.5f) {
-                // The user wants to input a button press with the drum
-                if (button != null) {
-                    button.onClick.Invoke();
-                }
-                if (field != null) {
-                    field.onSubmit.Invoke(field.text);
-                }
+                cueSelect = true;
             }
             else {
-                // The user wants to advance to the next item with the drum
-                GameObject nextSelected = EventSystem.current.currentSelectedGameObject.GetComponent<Selectable>().FindSelectableOnRight().gameObject;
-                //Debug.Log($"nextSelected: {nextSelected}");
-                EventSystem.current.SetSelectedGameObject(null);
-                EventSystem.current.SetSelectedGameObject(nextSelected);
+                cueAdvance = true;
             }
         }
     }

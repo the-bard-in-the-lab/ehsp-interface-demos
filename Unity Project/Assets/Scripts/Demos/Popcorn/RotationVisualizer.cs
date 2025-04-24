@@ -32,7 +32,7 @@ public class RotationVisualizer : MonoBehaviour
         transform.rotation = Random.rotationUniform;
     }
 
-    void BurgerHandler(OscMessage message) {
+    void BurgerHandler(OscMessage message, long time) {
 		Debug.Log("Message: " + message.ToString());
         string[] msg = message.ToString().Split(" ");
 		// Messages take the form /obsidian/hwout/midi1 <command> <velocity> <note> <transpose> <channel>

@@ -15,7 +15,7 @@ public class RockSpawner : MonoBehaviour
         osc.SetAddressHandler("/obsidian/hwout/midi1", RockHandler);
     }
     
-    void RockHandler(OscMessage message) {
+    void RockHandler(OscMessage message, long time) {
 		Debug.Log("Message: " + message.ToString());
         string[] msg = message.ToString().Split(" ");
 		// Messages take the form /obsidian/hwout/midi1 <command> <velocity> <note> <transpose> <channel>
