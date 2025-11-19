@@ -37,7 +37,7 @@ public class RockSpawner : MonoBehaviour
         newRock.transform.localScale = new Vector3(scale, scale, scale);
         Rigidbody rockBody = newRock.GetComponent<Rigidbody>();
         rockBody.mass = scale;
-        rockBody.velocity = spawnSpeed;
+        rockBody.linearVelocity = spawnSpeed;
         rockBody.rotation = Random.rotationUniform;
     }
 }

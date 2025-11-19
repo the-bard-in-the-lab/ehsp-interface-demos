@@ -16,7 +16,8 @@ public class TableOfTime : InputHandler_Generic
     double ioi;
     double startDelay = 2.0d;
     double nextLoadTime;
-    int[] valid_nums = {2, 3, 4, 5, 6, 7, 8, 9, 10};
+    int[] valid_nums = //{2, 3, 4, 5, 6, 7, 8, 9, 10};
+    {2, 3, 4, 5, 6, 7};
     List<GameObject> sources = new List<GameObject>();
     List<double> pingEventTimes = new List<double>();
     double killTime = 3d;
@@ -111,7 +112,9 @@ public class TableOfTime : InputHandler_Generic
         SetTimes(reference + ioi * numBeats);
         if (gamemode) {
             subdivision = next_subdivision;
-            next_subdivision = UnityEngine.Random.Range(3, 11);
+            List<int> tmp = valid_nums.ToList<int>();
+            tmp.Remove(subdivision);
+            next_subdivision = tmp[UnityEngine.Random.Range(0, tmp.Count)];
             // Sound here not needed really?
             number_text.enabled = true;
         }
