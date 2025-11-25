@@ -19,6 +19,7 @@ public class IntervalGrapher : MonoBehaviour
     
     void Start()
     {
+        // TODO: Reference time should be the OSC stopwatch start time
         referencetime = DateTime.Now.Ticks;
         m_Grapher = GetComponent<GraphGenerator>();
         diff = m_Grapher.xMax - m_Grapher.xMin;
