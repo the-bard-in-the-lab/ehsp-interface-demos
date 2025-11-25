@@ -6,7 +6,7 @@ This repository documents an implementation of the **VESPer** system (described 
 
 ## Requirements
 
-The Unity project was created in version `2022.3.25f1`. It can be opened in more recent versions, though this may increase the build time.
+The Unity project was original created in version `2022.3.25f1`. It has since been updated to a Unity 6 version following security patches.
 
 For the most complete experience, users will need the Sensory Percussion 2 software, as well as the accompanying hardware to connect one snare drum.
 
