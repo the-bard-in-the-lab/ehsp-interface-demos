@@ -7,46 +7,23 @@ public class PopcornHandler : InputHandler_Generic
 
     [SerializeField] float forceScalar = 50f;
     [SerializeField] float radius = 4f; // The radius within which we spawn new popcorn pieces
-    [SerializeField] bool readFromAudio;
-    [SerializeField] int sampleRange;
-    [SerializeField] float weightPerSample = .2f;
-    [SerializeField] float threshold = 0.5f;
     [SerializeField] Rigidbody[] zones; // The zone objects in the scene. Treated as an array in case we ever want more than two.
     [SerializeField] GameObject prefab; // The popcorn prefab
-    float sampleProduct;
-    List<string> commands;
-    List<float> velocities;
-    List<int> notes;
-    /*
-    sampleProduct is a rough estimate of the sum of the magnitude of the
-    samples in a short snippet of audio. We compare the actual sum to this
-    value when calculating how much force a note should be given.
-    */
-    AudioSource mySource;
-    AudioClip myClip;
-    float[] data;
+    private List<float> velocities;
+    private List<int> notes;
     
     void Start()
     {
         OSCSetup(); // (See note in InputHandler_Generic about OSCSetup)
-        mySource = GetComponent<AudioSource>();
-        myClip = mySource.clip;
-        sampleProduct = sampleRange * weightPerSample;
-        commands = new List<string>();
         velocities = new List<float>();
         notes = new List<int>();
     } 
 
     void Update() {
-        if (readFromAudio) {
-            InterpretAudio();
+        if (Input.GetKeyDown(KeyCode.Space)) {
+            InputHandler("play", 0.5f, 60, DateTime.Now.Ticks);
         }
-        else {
-            if (Input.GetKeyDown(KeyCode.Space)) {
-                InputHandler("play", 0.5f, 60, DateTime.Now.Ticks);
-            }
-        }
-
+    
         for (int i = 0; i < velocities.Count; i ++ ) {
             // If we are in the center of the drum, activate the center zone
             // Otherwise, use the edge
@@ -66,37 +43,10 @@ public class PopcornHandler : InputHandler_Generic
         notes.Clear();
     }
 
-    void InterpretAudio() {
-        // - - - Audio Interpreter - - - //
-        // This is for reading from audio.
-        if (readFromAudio) {
-            myClip = mySource.clip;
-            int myTime = mySource.timeSamples - sampleRange;
-            if (myTime < 0) {
-                myTime = 0;
-            }
-            myClip.GetData(data, myTime);
-            float sum = 0f;
-            foreach (var i in data) {
-                sum += Mathf.Abs(i);
-            }
-            
-            if (sum > threshold) {
-                foreach (var zone in zones) {
-                    zone.AddForce(forceScalar * (forceScalar / sampleProduct) * Vector3.up);
-                }
-            }
-        }
-    }
-
     protected override void InputHandler(string command, float velocity, int note, long time) {
-        lock(commands) {
-            Debug.Log("This is the popcorn handler version of the method.");
-            Debug.Log($"Message: {command} {velocity} {note}");
-            if (command.Equals("play")) {
-                velocities.Add(velocity);
-                notes.Add(note);
-            }
+        if (command.Equals("play")) {
+            velocities.Add(velocity);
+            notes.Add(note);
         }
     }
 }

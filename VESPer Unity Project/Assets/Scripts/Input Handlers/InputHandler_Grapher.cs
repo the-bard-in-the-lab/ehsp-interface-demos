@@ -19,8 +19,6 @@ public class GraphHandler : InputHandler_Generic
     }
 
     protected override void InputHandler(string command, float velocity, int note, long time) {
-        //Debug.Log("This is the graph handler version of the method.");
-        //Debug.Log($"Message: {command} {velocity} {note}");
         if (command.Equals("play")) {
             myGrapher.AddNewImpulse(time);
             myGrapher.AddNewVelocity(velocity);

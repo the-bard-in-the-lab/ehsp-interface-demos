@@ -11,9 +11,8 @@ public class IntervalGrapher : MonoBehaviour
     public List<float> vels;
     public List<double> iois;
     public List<Vector2> pairs;
-    [SerializeField] bool useDSPTime = false;
     long referencetime;
-    
+    double tickConversionFactor = 10000000.0;
 
     //public double scrollSpeed = 1f;
     
@@ -31,9 +30,7 @@ public class IntervalGrapher : MonoBehaviour
 
     void Update()
     {
-        //For unknown reasons, this seems to work better with Time.time than AudioSettings.dspTime.
-        //double dspTime = useDSPTime ? AudioSettings.dspTime : Time.time;
-        double dspTime = (DateTime.Now.Ticks - referencetime) / 10000000.0;
+        double dspTime = (DateTime.Now.Ticks - referencetime) / tickConversionFactor;
         m_Grapher.xMin = dspTime;
         m_Grapher.xMax = dspTime + diff;
         
@@ -50,10 +47,7 @@ public class IntervalGrapher : MonoBehaviour
         m_Grapher.DrawGraph(pairs, vels);
     }
     public void AddNewImpulse(long time) {
-        //double myDSP = AudioSettings.dspTime;
-        //impulses.Add(useDSPTime ? AudioSettings.dspTime : Time.time);
-        impulses.Add((time - referencetime) / 10000000.0);
-        //Debug.Log($"diff: {myDSP - lastTime}");
+        impulses.Add((time - referencetime) / tickConversionFactor);
     }
     public void AddNewVelocity(float vel) {
         vels.Add(vel);

@@ -16,7 +16,6 @@ public class RockSpawner : MonoBehaviour
     }
     
     void RockHandler(OscMessage message, long time) {
-		Debug.Log("Message: " + message.ToString());
         string[] msg = message.ToString().Split(" ");
 		// Messages take the form /obsidian/hwout/midi1 <command> <velocity> <note> <transpose> <channel>
         // Here, we care about the command (play vs. stop), the velocity (0.0 to 1.0), and the note (60, 62, or 64)

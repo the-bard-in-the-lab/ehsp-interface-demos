@@ -11,13 +11,14 @@ public class TableOfTime : InputHandler_Generic
     public TextMeshProUGUI number_text;
     public Slider tempo_slider;
     public GameObject metPing;
-    int tempo;
+    public int tempo = 80;
     int flag = -1;
     double ioi;
     double startDelay = 2.0d;
     double nextLoadTime;
     int[] valid_nums = //{2, 3, 4, 5, 6, 7, 8, 9, 10};
-    {2, 3, 4, 5, 6, 7};
+    //{2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+    {3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
     List<GameObject> sources = new List<GameObject>();
     List<double> pingEventTimes = new List<double>();
     double killTime = 3d;
@@ -32,16 +33,15 @@ public class TableOfTime : InputHandler_Generic
     public TMP_Dropdown dropdown;
     public GameObject tendencyOrb;
     List<double> closenesses;
-    // Use AudioSettings.dspTime instead of Time.time
+    
     // Start is called before the first frame update
     
     void Start()
     {
         OSCSetup(); // (See note in InputHandler_Generic about OSCSetup)
         
-        tempo = (int) tempo_slider.value;
+        tempo_slider.value = tempo;
         ioi = 60d / tempo; // Converts from BPM to interonset interval (in seconds)
-        Debug.Log("ioi: " + ioi);
         closenesses = new List<double>();
     }
 
@@ -49,7 +49,9 @@ public class TableOfTime : InputHandler_Generic
         subdivision = dropdown.value + 1;
     }
 
-    // Update is called once per frame
+    // FixedUpdate is called 50 times per second, regardless of frame rate.
+    // We use it here because it is better for processes that are closely
+    // tied to timing.
     void FixedUpdate()
     {
         foreach (var closeness in closenesses) {
@@ -132,6 +134,9 @@ public class TableOfTime : InputHandler_Generic
         myPing.GetComponent<MetPingData>().SetPing(ping, time);
     }
 
+    // We handle input in Update rather than FixedUpdate because ideally
+    // the frame rate should be faster than 50 times per second, giving us
+    // a higher resolution for user input.  
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space)) {
@@ -139,15 +144,20 @@ public class TableOfTime : InputHandler_Generic
         }
     }
     protected override void InputHandler(string command, float velocity, int note, long time) {
+        if (!Equals(command, "play"))
+        {
+            return;
+        }
         double myTime = AudioSettings.dspTime;
         double diff = referenceTime - (myTime - latency); // This order because referenceTime is always in the future
-        double howClose = diff / (ioi / subdivision) % 1; // %1 is cursed as hell but it does work sooooooo
+        double howClose = diff / (ioi / subdivision) % 1; // %1 is cursed but it does work sooooooo
         if (howClose < pctError || howClose > 1 - pctError) {
-            //Good job
-            Debug.Log("Good job.");
+            // Note performed successfully
+            Debug.Log("[✓]");
         }
         else {
-            Debug.Log("You suck lol");
+            // Note missed
+            Debug.Log("[x]");
         }
         if (howClose > 0.5) {
             howClose = howClose - 1;

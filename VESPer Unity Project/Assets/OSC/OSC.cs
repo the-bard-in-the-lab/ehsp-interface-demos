@@ -66,7 +66,7 @@ public class UDPPacketIO
 	{
 		// latest time for this socket to be closed
 		if (IsOpen()) {
-			Debug.Log("closing udpclient listener on port " + localPort);
+			//Debug.Log("closing udpclient listener on port " + localPort);
 			Close();
 		}
 		
@@ -81,9 +81,9 @@ public class UDPPacketIO
 		try
 		{
 			// This line is added:
-      // localPort = GlobalData.port;
+      localPort = GlobalData.port;
       Sender = new UdpClient();
-			Debug.Log("Opening OSC listener on port " + localPort);
+			//Debug.Log("Opening OSC listener on port " + localPort);
 			
 			IPEndPoint listenerIp = new IPEndPoint(IPAddress.Any, localPort);
 			Receiver = new UdpClient(listenerIp);
@@ -113,7 +113,7 @@ public class UDPPacketIO
 		if (Receiver != null)
 		{
 			Receiver.Close();
-			// Debug.Log("UDP receiver closed");
+			//Debug.Log("UDP receiver closed");
 		}
 		Receiver = null;
 		socketsOpen = false;
@@ -305,7 +305,7 @@ public delegate void OscMessageHandler( OscMessage oscM, long time);
 public class OSC : MonoBehaviour
 {
 
-  public int inPort  = 6969;
+  public int inPort  = 6262;
   public string outIP = "127.0.0.1";
   public int outPort  = 6161;
 
@@ -332,30 +332,28 @@ public class OSC : MonoBehaviour
   #endif
 
   void Awake() {
-  //print("Opening OSC listener on port " + inPort);
-  // This line is added:
-  inPort = GlobalData.port;
-  OscPacketIO = new UDPPacketIO(outIP, outPort, inPort);
-  AddressTable = new Hashtable();
-  messagesReceived = new ArrayList();
-  buffer = new byte[1000];
+    inPort = GlobalData.port;
+    OscPacketIO = new UDPPacketIO(outIP, outPort, inPort);
+    AddressTable = new Hashtable();
+    messagesReceived = new ArrayList();
+    buffer = new byte[1000];
 
-  ReadThread = new Thread(Read);
-  ReaderRunning = true;
-  ReadThread.IsBackground = true;
-  stopWatch.Start();
-  ReadThread.Start();
+    ReadThread = new Thread(Read);
+    ReaderRunning = true;
+    ReadThread.IsBackground = true;
+    stopWatch.Start();
+    ReadThread.Start();
 
 
-  BetterThanUpdate = new Thread(ThisRunsReallyFast);
-  BetterThanUpdate.IsBackground = true;      
-  BetterThanUpdate.Start();
+    BetterThanUpdate = new Thread(ThisRunsReallyFast);
+    BetterThanUpdate.IsBackground = true;      
+    BetterThanUpdate.Start();
 
 
-  #if UNITY_EDITOR
-    //UnityEditor.EditorApplication.playmodeStateChanged = HandleOnPlayModeChanged;
-    UnityEditor.EditorApplication.playModeStateChanged += HandleOnPlayModeChanged;  //FIX FOR UNITY POST 2017
-  #endif
+    #if UNITY_EDITOR
+      //UnityEditor.EditorApplication.playmodeStateChanged = HandleOnPlayModeChanged;
+      UnityEditor.EditorApplication.playModeStateChanged += HandleOnPlayModeChanged;  //FIX FOR UNITY POST 2017
+    #endif
 
   }
 
@@ -400,16 +398,14 @@ public class OSC : MonoBehaviour
   
   void ThisRunsReallyFast() {
     while (true) {
-      //Debug.Log("NYOOM");
       if ( messagesReceived.Count > 0 ) {
-        //Debug.Log("received " + messagesReceived.Count + " messages");
         // ReadThreadLock is a resource that we impose a lock on as a surrogate for
         // manipulating the massagesReceived buffer.
         lock(ReadThreadLock) {
           foreach (OscMessage om in messagesReceived)
           {
             if (AllMessageHandler != null)
-              AllMessageHandler(om, stopWatch.Elapsed.Ticks);//DateTime.Now.Ticks
+              AllMessageHandler(om, stopWatch.Elapsed.Ticks);
 
             ArrayList al = (ArrayList)Hashtable.Synchronized(AddressTable)[om.address];
             if ( al != null) {
@@ -452,7 +448,7 @@ public class OSC : MonoBehaviour
       {
           OscPacketIO.Close();
           OscPacketIO = null;
-          Debug.Log("Closed OSC listener");
+          //Debug.Log("Closed OSC listener");
       }
   }
 
@@ -466,10 +462,8 @@ public class OSC : MonoBehaviour
   {
     try
     {
-      while (ReaderRunning) //while (ReaderRunning)
+      while (ReaderRunning)
       {
-        //tot ++;
-        //Debug.Log("Something something thread something something");
         int length = OscPacketIO.ReceivePacket(buffer);
       
         if (length > 0) {
@@ -511,16 +505,19 @@ public class OSC : MonoBehaviour
         // }
       }
     }
-    
+    #pragma warning disable 0168
     catch (Exception e)
     {
-      Debug.Log("ThreadAbortException"+e);
-    }
-    finally
-    {
+      // This catch throws an exception if an OSC component is destroyed
+      // or unloaded unexpectedly. This happens when changing scenes. Since
+      // this project uses separate OSC components in separate scenes, this
+      // creates unwanted exceptions in the debug log. It has been commented
+      // out for convenience.
 
+      // Debug.Log("ThreadAbortException"+e);
+      
     }
-    
+    #pragma warning restore 0168
   }
 
   /// <summary>

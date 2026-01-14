@@ -29,13 +29,11 @@ public class GraphGenerator : MonoBehaviour
     void Start()
     {
         myRectTransform = GetComponent<RectTransform>();
-        //myRenderer = GetComponentInChildren<LineRendererUI>().gameObject;
         renderSquad = new List<GameObject>();
         widthController.value = lineWidth;
         myRenderer.GetComponent<LineRendererUI>().lineWidth = lineWidth;
         for (int i = 0; i < numRenderers; i ++) {
             renderSquad.Add(Instantiate(myRenderer, gameObject.transform));
-            //Debug.Log(renderSquad[i]);
             renderSquad[i].SetActive(true);
         }
     }
@@ -44,7 +42,6 @@ public class GraphGenerator : MonoBehaviour
         foreach (var lr in renderSquad) {
             lr.GetComponent<LineRendererUI>().SetLineWidth(lineWidth);
         }
-        //myRenderer.GetComponent<LineRendererUI>().SetLineWidth(lineWidth);
     }
 
     public void DrawGraph(List<Vector2> points, List<float> segColors) {
@@ -63,9 +60,6 @@ public class GraphGenerator : MonoBehaviour
                                             (float) ((points[i].y - yShift) * yScalar)));
         }
         
-        //myRenderer.GetComponent<LineRendererUI>().SetVertices(pointsConverted);
-        
-        
         // Multi-renderer version:
         if (pointsConverted.Count > 1) {
             int start = 1;
@@ -76,37 +70,17 @@ public class GraphGenerator : MonoBehaviour
             }
             
             for (int i = 0; i < end; i ++) {
-                // Debug.Log($"renderSquad.Count: {renderSquad.Count}");
-                // Debug.Log($"pointsConverted.Count: {pointsConverted.Count}");
-                // Debug.Log($"start + i - 1: {start + i - 1}");
-                // Debug.Log($"end: {end}");
-                
+                // Uncomment for Debug information
+                /*
+                Debug.Log($"renderSquad.Count: {renderSquad.Count}");
+                Debug.Log($"pointsConverted.Count: {pointsConverted.Count}");
+                Debug.Log($"start + i - 1: {start + i - 1}");
+                Debug.Log($"end: {end}");
+                */
                 LineRendererUI thisRenderer = renderSquad[i].GetComponent<LineRendererUI>();
                 thisRenderer.SetVertices(new List<Vector2> {pointsConverted[start + i - 1], pointsConverted[start + i]});
                 thisRenderer.color = myGradient.Evaluate(segColors[start + i + 1]);
             }
         }
-        
-        
-        // Culls points on 2D graphs that pass the vertical line test:
-        // With the multi-renderer version, this is unnecessary
-
-        // int startInd = points.Count - 1;
-        // int endInd = 0;
-        // while (points[startInd].x >= xMin && startInd > 0) {
-        //     startInd --;
-        // }
-        // while (points[endInd].x <= xMax && endInd < points.Count - 1) {
-        //     endInd ++;
-        // }
-
-
-        // if (startInd < endInd) {
-        //     List<Vector2> pointsCulled = pointsConverted.GetRange(startInd, endInd - startInd);
-        //     myRenderer.SetVertices(pointsCulled);
-        // }
-        // else {
-        //     myRenderer.SetVertices(new List<Vector2>());
-        // }
     }
 }

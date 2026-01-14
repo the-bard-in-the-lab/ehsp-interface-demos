@@ -31,11 +31,7 @@ public class GlobalData : MonoBehaviour
     }
 
     public static void setOSCAddress(string newAddress) {
-        // TODO: Confirm the user isn't trying to break the system
         OSCAddress = newAddress;
-
-        // Debug.LogError("Invalid OSC Address; using default address of " + defaultAddress);
-        // OSCAddress = defaultAddress;
     }
 
     // These functions are for updating Global Data values from a text field
@@ -49,7 +45,7 @@ public class GlobalData : MonoBehaviour
 
     public static OSC getOSC() {
         osc = GameObject.FindGameObjectWithTag("OSC").GetComponent<OSC>();
-        Debug.Log($"Found object {osc}");
+        //Debug.Log($"Found object {osc}");
         return osc;
     }
 }

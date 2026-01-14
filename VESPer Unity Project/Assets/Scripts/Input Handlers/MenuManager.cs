@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using TMPro;
-using Unity.VisualScripting;
+using System;
 public class MenuManager : InputHandler_Generic
 {
     [SerializeField] private Canvas canvas;
@@ -45,13 +45,23 @@ public class MenuManager : InputHandler_Generic
         }
     }
     void Update() {
-        Button button = EventSystem.current.currentSelectedGameObject.GetComponent<Button>();
+        Button button;
+        try
+        {
+            button = EventSystem.current.currentSelectedGameObject.GetComponent<Button>();
+        }
+        catch(Exception e)
+        {
+            // The user doesn't have a currently selected UI element.
+            Debug.Log(e);
+            return;
+        }
+        
         TMP_InputField field = EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>();
-        //Debug.Log(button);
         if (cueAdvance) {
             // The user wants to advance to the next item with the drum
             GameObject nextSelected = EventSystem.current.currentSelectedGameObject.GetComponent<Selectable>().FindSelectableOnRight().gameObject;
-            //Debug.Log($"nextSelected: {nextSelected}");
+            // Debug.Log($"nextSelected: {nextSelected}");
             EventSystem.current.SetSelectedGameObject(null);
             EventSystem.current.SetSelectedGameObject(nextSelected);
             cueAdvance = false; // Reset the flag
@@ -71,7 +81,6 @@ public class MenuManager : InputHandler_Generic
 
     protected override void InputHandler(string command, float velocity, int note, long time) {
         if (command.Equals("play")) {            
-            //Debug.Log(velocity);
             if (velocity > 0.5f) {
                 cueSelect = true;
             }
