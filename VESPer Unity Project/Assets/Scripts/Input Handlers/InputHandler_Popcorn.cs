@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 public class PopcornHandler : InputHandler_Generic
 {
-
+    // This is the input handler for the Popcorn demo.
     [SerializeField] float forceScalar = 50f;
     [SerializeField] float radius = 4f; // The radius within which we spawn new popcorn pieces
     [SerializeField] Rigidbody[] zones; // The zone objects in the scene. Treated as an array in case we ever want more than two.

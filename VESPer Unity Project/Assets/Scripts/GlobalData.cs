@@ -46,6 +46,10 @@ public class GlobalData : MonoBehaviour
     public static OSC getOSC() {
         osc = GameObject.FindGameObjectWithTag("OSC").GetComponent<OSC>();
         //Debug.Log($"Found object {osc}");
+        if (osc.overrideGlobalData)
+        {
+            setPort(osc.inPort);
+        }
         return osc;
     }
 }

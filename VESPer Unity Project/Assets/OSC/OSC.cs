@@ -80,8 +80,6 @@ public class UDPPacketIO
 	{
 		try
 		{
-			// This line is added:
-      localPort = GlobalData.port;
       Sender = new UdpClient();
 			//Debug.Log("Opening OSC listener on port " + localPort);
 			
@@ -306,6 +304,7 @@ public class OSC : MonoBehaviour
 {
 
   public int inPort  = 6262;
+  public bool overrideGlobalData = false;
   public string outIP = "127.0.0.1";
   public int outPort  = 6161;
 
@@ -332,7 +331,10 @@ public class OSC : MonoBehaviour
   #endif
 
   void Awake() {
-    inPort = GlobalData.port;
+    if (!overrideGlobalData)
+    {
+      inPort = GlobalData.port;  
+    }
     OscPacketIO = new UDPPacketIO(outIP, outPort, inPort);
     AddressTable = new Hashtable();
     messagesReceived = new ArrayList();
@@ -348,7 +350,6 @@ public class OSC : MonoBehaviour
     BetterThanUpdate = new Thread(ThisRunsReallyFast);
     BetterThanUpdate.IsBackground = true;      
     BetterThanUpdate.Start();
-
 
     #if UNITY_EDITOR
       //UnityEditor.EditorApplication.playmodeStateChanged = HandleOnPlayModeChanged;

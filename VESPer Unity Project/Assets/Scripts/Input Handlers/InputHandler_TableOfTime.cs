@@ -8,6 +8,7 @@ using System.Linq;
 
 public class TableOfTime : InputHandler_Generic
 {
+    // This is the input handler for the Table of Time demo.
     public TextMeshProUGUI number_text;
     public Slider tempo_slider;
     public GameObject metPing;

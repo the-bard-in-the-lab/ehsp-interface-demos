@@ -16,7 +16,6 @@ public class InputHandler_Generic : MonoBehaviour
     /// </summary>
     protected void OSCSetup() {
         osc = GlobalData.getOSC();
-        osc.inPort = GlobalData.port;
         osc.SetAddressHandler(GlobalData.OSCAddress, OSCHandler);
     }
     /// <summary>

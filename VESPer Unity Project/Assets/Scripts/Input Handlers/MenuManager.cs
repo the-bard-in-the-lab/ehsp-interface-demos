@@ -50,12 +50,14 @@ public class MenuManager : InputHandler_Generic
         {
             button = EventSystem.current.currentSelectedGameObject.GetComponent<Button>();
         }
+        #pragma warning disable 0168
         catch(Exception e)
         {
             // The user doesn't have a currently selected UI element.
-            Debug.Log(e);
+            // Debug.Log(e);
             return;
         }
+        #pragma warning restore 0168
         
         TMP_InputField field = EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>();
         if (cueAdvance) {

@@ -12,6 +12,8 @@
 /[Uu]ser[Ss]ettings/
 .DS_Store
 
+*.sp2.autosave
+
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
 /[Mm]emoryCaptures/
